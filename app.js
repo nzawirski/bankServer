@@ -51,7 +51,7 @@ app.get('/api/secret', verifyToken, (req, res) => {
 
 })
 
-app.post('/api/login', { expiresIn: '30s'}, (req, res) => {
+app.post('/api/login', (req, res) => {
     const { login, password } = req.body;
     if (!login || !password) {
         return res.status(400).json({
