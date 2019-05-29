@@ -1,34 +1,36 @@
 const express = require('express')
 const app = express()
-
-var cors = require('cors');
-app.use(cors());
-
-const { Client } = require('pg')
-const client = new Client({
-    user: "2018_zawirski_nikodem",
-    password: "29565",
-    host: "195.150.230.210",
-    port: 5434,
-    database: "2018_zawirski_nikodem"
-})
-
+const config = require('config')
+const cors = require('cors');
 const jwt = require('jsonwebtoken')
-
-//client.connect()
-//    .then(() => {
-//        console.log("Connected to DB successfuly");
-//    })
-//    .catch((e) => {
-//        console.error(e)
-//    })
-//    .finally(() => {
-//        client.end();
-//    })
-
-//var connect = "postgres://2018_zawirski_nikodem:29565@195.150.230.210/2018_zawirski_nikodem"
-
+const { Client } = require('pg')
+app.use(cors());
 app.use(express.json());
+
+// db
+let db = require('./config/db')
+
+testConnection()
+async function testConnection() {
+    const client = new Client(db)
+    try {
+
+        await client.connect()
+        console.log("Connected to DB successfully.")
+
+    }
+    catch (e) {
+        console.error(e)
+    }
+    finally {
+        await client.end()
+        console.log("Good to go.")
+    }
+}
+
+//routes
+app.use('/api', require('./api/login'))
+
 
 app.get('/api', (req, res) => {
     console.log('>>Bang');
@@ -41,22 +43,20 @@ app.get('/api', (req, res) => {
 })
 
 async function getKonta() {
-    try{
+    const client = new Client(db)
+    try {
 
-    await client.connect()
-    console.log("Connected successfully.")
-    //await client.query("insert into employees values (1, 'John')")
+        await client.connect()
+        console.log("Connected successfully.")
 
-    const {rows} = await client.query("select * from bank.konto")
-    console.table(rows)
+        const { rows } = await client.query("select * from bank.konto")
+        console.table(rows)
 
     }
-    catch (ex)
-    {
-        console.log(`Something wrong happend ${ex}`)
+    catch (e) {
+        console.log(e)
     }
-    finally
-    {
+    finally {
         await client.end()
         console.log("Client disconnected successfully.")
     }
@@ -64,7 +64,7 @@ async function getKonta() {
 }
 
 app.get('/api/secret', verifyToken, (req, res) => {
-    jwt.verify(req.token, 'secret', (err, authData) => {
+    jwt.verify(req.token, config.get('secretKey'), (err, authData) => {
         if (err) {
             res.sendStatus(403).json({
                 message: err
@@ -77,20 +77,6 @@ app.get('/api/secret', verifyToken, (req, res) => {
             })
         }
     })
-
-})
-
-app.post('/api/login', (req, res) => {
-    const { login, password } = req.body;
-    if (!login || !password) {
-        return res.status(400).json({
-            message: "login or password not provided"
-        })
-    }
-
-    jwt.sign({ user: login }, 'secret', (err, token) => {
-        res.json({ token: token })
-    });
 
 })
 
