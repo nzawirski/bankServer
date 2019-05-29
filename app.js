@@ -15,16 +15,16 @@ const client = new Client({
 
 const jwt = require('jsonwebtoken')
 
-client.connect()
-    .then(() => {
-        console.log("Connected to DB successfuly");
-    })
-    .catch((e) => {
-        console.error(e)
-    })
-    .finally(() => {
-        client.end();
-    })
+//client.connect()
+//    .then(() => {
+//        console.log("Connected to DB successfuly");
+//    })
+//    .catch((e) => {
+//        console.error(e)
+//    })
+//    .finally(() => {
+//        client.end();
+//    })
 
 //var connect = "postgres://2018_zawirski_nikodem:29565@195.150.230.210/2018_zawirski_nikodem"
 
@@ -32,10 +32,36 @@ app.use(express.json());
 
 app.get('/api', (req, res) => {
     console.log('>>Bang');
+
+    getKonta()
+
     res.json({
         message: 'Bang Bank'
     })
 })
+
+async function getKonta() {
+    try{
+
+    await client.connect()
+    console.log("Connected successfully.")
+    //await client.query("insert into employees values (1, 'John')")
+
+    const {rows} = await client.query("select * from bank.konto")
+    console.table(rows)
+
+    }
+    catch (ex)
+    {
+        console.log(`Something wrong happend ${ex}`)
+    }
+    finally
+    {
+        await client.end()
+        console.log("Client disconnected successfully.")
+    }
+
+}
 
 app.get('/api/secret', verifyToken, (req, res) => {
     jwt.verify(req.token, 'secret', (err, authData) => {
@@ -61,7 +87,6 @@ app.post('/api/login', (req, res) => {
             message: "login or password not provided"
         })
     }
-    //todo: verify credentials
 
     jwt.sign({ user: login }, 'secret', (err, token) => {
         res.json({ token: token })
