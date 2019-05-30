@@ -6,7 +6,7 @@ const { Client } = require('pg')
 
 let db = require('../config/db')
 
-router.get('/:clientName', verifyToken, (req, res) => {
+router.get('/', verifyToken, (req, res) => {
     
     jwt.verify(req.token, config.get('secretKey'), (err, authData) => {
         if (err) {
@@ -15,19 +15,10 @@ router.get('/:clientName', verifyToken, (req, res) => {
             })
         } else {
             console.log(authData.user);
-            if(authData.user == req.params.clientName){
-                console.log("user ok")
-                res.json({
-                    message: req.params,
-                    authData
-                })
-            }else{
-                console.log("user not ok")
-                res.status(403).json({
-                    message: "wrong user"
-                })
-            }
-            
+            res.json({
+                message: authData.user
+            })
+
         }
     })
 
