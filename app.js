@@ -29,8 +29,8 @@ async function testConnection() {
 }
 
 //routes
-app.use('/api', require('./api/login'))
-
+app.use('/api/login', require('./api/login'))
+app.use('/api/client', require('./api/client'))
 
 app.get('/api', (req, res) => {
     console.log('>>Bang');
@@ -70,7 +70,7 @@ app.get('/api/secret', verifyToken, (req, res) => {
                 message: err
             })
         } else {
-            console.log('Intruder Alert! Red spy in base!');
+            console.log(authData.user);
             res.json({
                 message: "Welcome to my secret route",
                 authData
@@ -96,7 +96,6 @@ function verifyToken(req, res, next) {
         // Forbidden
         res.sendStatus(403);
     }
-
 }
 
 app.listen(3000, () => {

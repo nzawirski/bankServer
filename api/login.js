@@ -6,14 +6,13 @@ const { Client } = require('pg')
 
 let db = require('../config/db')
 
-router.post('/login', (req, res) => {
+router.post('/', (req, res) => {
     const { login, password } = req.body;
     if (!login || !password) {
         return res.status(400).json({
             message: "login or password not provided"
         })
     }
-    //verifyCredentials(login, password)
     const client = new Client(db)
     const query = `SELECT password FROM bank.klient WHERE login = '${login}'`
     client.connect()
@@ -35,8 +34,6 @@ router.post('/login', (req, res) => {
             })
         }
     })
-
-    
 
 })
 
