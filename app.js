@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken')
 const { Client } = require('pg')
 app.use(cors());
 app.use(express.json());
-
+let verifyToken = require('./token/verifyToken')
 // db
 let db = require('./config/db')
 
@@ -31,6 +31,7 @@ async function testConnection() {
 //routes
 app.use('/api/login', require('./api/login'))
 app.use('/api/client', require('./api/client'))
+app.use('/api/account', require('./api/account'))
 
 app.get('/api', (req, res) => {
     console.log('>>Bang');
@@ -80,23 +81,6 @@ app.get('/api/secret', verifyToken, (req, res) => {
 
 })
 
-//verify token
-function verifyToken(req, res, next) {
-    //get auth header value
-    const bearerHeader = req.headers['authorization'];
-
-    if (typeof bearerHeader !== 'undefined') {
-        // get token
-        const bearer = bearerHeader.split(' ');
-        const bearerToken = bearer[1];
-        //grant token
-        req.token = bearerToken;
-        next();
-    } else {
-        // Forbidden
-        res.sendStatus(403);
-    }
-}
 
 app.listen(3000, () => {
     console.log('Server Started on port 3000');
