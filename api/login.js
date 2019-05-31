@@ -3,6 +3,7 @@ const router = express.Router()
 const config = require('config')
 const jwt = require('jsonwebtoken')
 const { Client } = require('pg')
+const bcrypt = require('bcrypt');
 
 let db = require('../config/db')
 
@@ -23,18 +24,23 @@ router.post('/', (req, res) => {
             let passInDB = qres.rows[0].password
             let userId = qres.rows[0].id_klienta
 
-            if (password == passInDB) {
-                //pass good
-                jwt.sign({ user: login, id: userId }, config.get('secretKey'), (err, token) => {
-                    res.json({ token: token })
-                });
+            bcrypt.compare(password, passInDB, (err, _res) => {
+                if (err) throw err;
+                if (_res) {
 
-            } else {
-                //pass bad
-                res.status(400).json({
-                    message: "Wrong Password"
-                })
-            }
+                    //pass good
+                    jwt.sign({ user: login, id: userId }, config.get('secretKey'), (err, token) => {
+                        res.json({ token: token })
+                    });
+
+                } else {
+                    //pass bad
+                    res.status(400).json({
+                        message: "Wrong Password"
+                    })
+                }
+
+            })
 
             client.end()
         })
@@ -45,8 +51,6 @@ router.post('/', (req, res) => {
             })
         })
 
-
 })
-
 
 module.exports = router
