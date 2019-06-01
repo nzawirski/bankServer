@@ -14,7 +14,8 @@ router.get('/:accountId', verifyToken, (req, res) => {
             res.status(403).json({
                 message: err
             })
-        } else {
+        }
+        else {
             // user ok
 
             const client = new Client(db)
@@ -23,14 +24,23 @@ router.get('/:accountId', verifyToken, (req, res) => {
 
             client.connect()
 
-            const query = `SELECT saldo FROM bank.konto a
+            const query = `SELECT id_konta, saldo, id_klienta FROM bank.konto a
+            NATURAL JOIN bank.konto_klienta
             WHERE a.id_konta = ${accountId}`
 
             client.query(query)
                 .then(qres => {
-                    res.json({
-                        message: qres.rows
-                    })
+
+                    if (authData.id == qres.rows[0].id_klienta) {
+                        res.json({
+                            message: qres.rows
+                        })
+                    } else {
+                        res.status(400).json({
+                            message: "Wrong User"
+                        })
+                    }
+
                     client.end()
                 })
                 .catch(e => {
@@ -62,13 +72,27 @@ router.get('/:accountId/getTransfers', verifyToken, (req, res) => {
             client.connect()
 
             const query = `SELECT * FROM bank.przelew a
+            JOIN bank.konto_klienta b ON a.id_konta_zrodlowego = b.id_konta
             WHERE a.id_konta_zrodlowego = ${accountId}`
 
             client.query(query)
                 .then(qres => {
-                    res.json({
-                        message: qres.rows
-                    })
+                    if (qres.rowCount > 0) {
+                        if (authData.id == qres.rows[0].id_klienta) {
+                            res.json({
+                                message: qres.rows
+                            })
+                        } else {
+                            res.status(400).json({
+                                message: "Wrong User"
+                            })
+                        }
+                    } else {
+                        res.json({
+                            message: "no items found"
+                        })
+                    }
+
                     client.end()
                 })
                 .catch(e => {
@@ -100,13 +124,25 @@ router.get('/:accountId/getTransfers/incoming', verifyToken, (req, res) => {
             client.connect()
 
             const query = `SELECT * FROM bank.przelew a
+            JOIN bank.konto_klienta b ON a.id_konta_docelowego = b.id_konta
             WHERE a.id_konta_docelowego = ${accountId}`
 
             client.query(query)
                 .then(qres => {
-                    res.json({
-                        message: qres.rows
-                    })
+                    if (qres.rowCount > 0) {
+                        if (authData.id == qres.rows[0].id_klienta) {
+                            res.json({
+                                message: qres.rows
+                            })
+                        } res.status(400).json({
+                            message: "Wrong User"
+                        })
+                    }
+                    else {
+                        res.json({
+                            message: "no items found"
+                        })
+                    }
                     client.end()
                 })
                 .catch(e => {
@@ -138,13 +174,25 @@ router.get('/:accountId/getInvestments', verifyToken, (req, res) => {
             client.connect()
 
             const query = `SELECT * FROM bank.lokata a
+            NATURAL JOIN bank.konto_klienta
             WHERE a.id_konta = ${accountId}`
 
             client.query(query)
                 .then(qres => {
-                    res.json({
-                        message: qres.rows
-                    })
+                    if (qres.rowCount > 0) {
+                        if (authData.id == qres.rows[0].id_klienta) {
+                            res.json({
+                                message: qres.rows
+                            })
+                        } res.status(400).json({
+                            message: "Wrong User"
+                        })
+                    }
+                    else {
+                        res.json({
+                            message: "no items found"
+                        })
+                    }
                     client.end()
                 })
                 .catch(e => {
@@ -177,13 +225,25 @@ router.get('/:accountId/getCredits', verifyToken, (req, res) => {
             client.connect()
 
             const query = `SELECT * FROM bank.kredyt a
+            NATURAL JOIN bank.konto_klienta
             WHERE a.id_konta = ${accountId}`
 
             client.query(query)
                 .then(qres => {
-                    res.json({
-                        message: qres.rows
-                    })
+                    if (qres.rowCount > 0) {
+                        if (authData.id == qres.rows[0].id_klienta) {
+                            res.json({
+                                message: qres.rows
+                            })
+                        } res.status(400).json({
+                            message: "Wrong User"
+                        })
+                    }
+                    else {
+                        res.json({
+                            message: "no items found"
+                        })
+                    }
                     client.end()
                 })
                 .catch(e => {

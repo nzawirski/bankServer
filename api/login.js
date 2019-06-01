@@ -22,8 +22,6 @@ router.post('/', (req, res) => {
         .then(qres => {
             if (qres.rowCount > 0) {
 
-
-
                 let passInDB = qres.rows[0].password
                 let userId = qres.rows[0].id_klienta
 
