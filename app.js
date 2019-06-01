@@ -33,6 +33,8 @@ async function testConnection() {
 app.use('/api/login', require('./api/login'))
 app.use('/api/client', require('./api/client'))
 app.use('/api/account', require('./api/account'))
+app.use('/api/payment', require('./api/payment'))
+
 app.use('/admin/', require('./api/admin'))
 
 app.listen(3000, () => {
