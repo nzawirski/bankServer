@@ -11,14 +11,11 @@ let verifyToken = require('./token/verifyToken')
 // db
 let db = require('./config/db')
 
-testConnection()
-async function testConnection() {
+const testConnection = async () => {
     const client = new Client(db)
     try {
-
         await client.connect()
         console.log("Connected to DB successfully.")
-
     }
     catch (e) {
         console.error(e)
@@ -28,6 +25,7 @@ async function testConnection() {
         console.log("Good to go.")
     }
 }
+testConnection()
 
 //routes
 app.use('/api/login', require('./api/login'))
