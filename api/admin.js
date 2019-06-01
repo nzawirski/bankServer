@@ -58,7 +58,7 @@ router.get('/getAccounts', (req, res) => {
 
 })
 
-//Konta klientow
+//przelewy
 router.get('/getTransfers', (req, res) => {
 
     const client = new Client(db)
