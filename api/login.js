@@ -20,27 +20,35 @@ router.post('/', (req, res) => {
     client.connect()
     client.query(query)
         .then(qres => {
+            if (qres.rowCount > 0) {
 
-            let passInDB = qres.rows[0].password
-            let userId = qres.rows[0].id_klienta
 
-            bcrypt.compare(password, passInDB, (err, _res) => {
-                if (err) throw err;
-                if (_res) {
 
-                    //pass good
-                    jwt.sign({ user: login, id: userId }, config.get('secretKey'), (err, token) => {
-                        res.json({ token: token })
-                    });
+                let passInDB = qres.rows[0].password
+                let userId = qres.rows[0].id_klienta
 
-                } else {
-                    //pass bad
-                    res.status(400).json({
-                        message: "Wrong Password"
-                    })
-                }
+                bcrypt.compare(password, passInDB, (err, _res) => {
+                    if (err) throw err;
+                    if (_res) {
 
-            })
+                        //pass good
+                        jwt.sign({ user: login, id: userId }, config.get('secretKey'), (err, token) => {
+                            res.json({ token: token })
+                        });
+
+                    } else {
+                        //pass bad
+                        res.status(400).json({
+                            message: "Wrong Password"
+                        })
+                    }
+
+                })
+            }else{
+                res.status(200).json({
+                    message: `user ${login} does not exist`
+                })
+            }
 
             client.end()
         })
