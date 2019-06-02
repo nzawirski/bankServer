@@ -71,9 +71,13 @@ router.get('/:accountId/getTransfers', verifyToken, (req, res) => {
 
             client.connect()
 
-            const query = `SELECT * FROM bank.przelew a
+            let query = `SELECT * FROM bank.przelew a
             JOIN bank.konto_klienta b ON a.id_konta_zrodlowego = b.id_konta
             WHERE a.id_konta_zrodlowego = ${accountId}`
+
+            if(req.query.sort){ 
+                query += ` ORDER BY a.data ${req.query.sort}`
+            }
 
             client.query(query)
                 .then(qres => {
@@ -123,9 +127,13 @@ router.get('/:accountId/getTransfers/incoming', verifyToken, (req, res) => {
 
             client.connect()
 
-            const query = `SELECT * FROM bank.przelew a
+            let query = `SELECT * FROM bank.przelew a
             JOIN bank.konto_klienta b ON a.id_konta_docelowego = b.id_konta
             WHERE a.id_konta_docelowego = ${accountId}`
+
+            if(req.query.sort){ 
+                query += ` ORDER BY a.data ${req.query.sort}`
+            }
 
             client.query(query)
                 .then(qres => {
@@ -175,9 +183,13 @@ router.get('/:accountId/getInvestments', verifyToken, (req, res) => {
 
             client.connect()
 
-            const query = `SELECT * FROM bank.lokata a
+            let query = `SELECT * FROM bank.lokata a
             NATURAL JOIN bank.konto_klienta
             WHERE a.id_konta = ${accountId}`
+
+            if(req.query.sort){ 
+                query += ` ORDER BY a.data ${req.query.sort}`
+            }
 
             client.query(query)
                 .then(qres => {
@@ -228,9 +240,13 @@ router.get('/:accountId/getCredits', verifyToken, (req, res) => {
 
             client.connect()
 
-            const query = `SELECT * FROM bank.kredyt a
+            let query = `SELECT * FROM bank.kredyt a
             NATURAL JOIN bank.konto_klienta
             WHERE a.id_konta = ${accountId}`
+
+            if(req.query.sort){ 
+                query += ` ORDER BY a.data ${req.query.sort}`
+            }
 
             client.query(query)
                 .then(qres => {
@@ -281,9 +297,13 @@ router.get('/:accountId/getPayments', verifyToken, (req, res) => {
 
             client.connect()
 
-            const query = `SELECT * FROM bank.wplata a
+            let query = `SELECT * FROM bank.wplata a
             NATURAL JOIN bank.konto_klienta
             WHERE a.id_konta = ${accountId}`
+
+            if(req.query.sort){ 
+                query += ` ORDER BY a.data ${req.query.sort}`
+            }
 
             client.query(query)
                 .then(qres => {
