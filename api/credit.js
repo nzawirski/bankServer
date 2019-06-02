@@ -8,7 +8,7 @@ let verifyToken = require('../token/verifyToken')
 let db = require('../config/db')
 
 
-router.get('/:paymentId/', verifyToken, (req, res) => {
+router.get('/:creditId/', verifyToken, (req, res) => {
 
     jwt.verify(req.token, config.get('secretKey'), (err, authData) => {
         if (err) {
@@ -20,13 +20,13 @@ router.get('/:paymentId/', verifyToken, (req, res) => {
 
             const client = new Client(db)
 
-            let paymentId = req.params.paymentId
+            let creditId = req.params.creditId
 
             client.connect()
 
-            const query = `SELECT * FROM bank.wplata a
+            const query = `SELECT * FROM bank.kredyt a
             NATURAL JOIN bank.konto_klienta
-            WHERE a.id_wplaty = ${paymentId}`
+            WHERE a.id_kredytu = ${creditId}`
 
             client.query(query)
                 .then(qres => {
@@ -60,24 +60,24 @@ router.get('/:paymentId/', verifyToken, (req, res) => {
 
 })
 
-//wplata
 router.post('/add', (req, res) => {
 
     let id_konta = req.body.id_konta ? req.body.id_konta : null
-    let typ = req.body.typ ? inQuotes(req.body.typ) : null
     let kwota = req.body.kwota ? req.body.kwota : null
+    let oprocentowanie = req.body.oprocentowanie ? req.body.oprocentowanie : null
+    let stan = req.body.stan ? inQuotes(req.body.stan) : null
 
     const pool = new Pool(db)
 
-    let makePayment = async () => {
+    let makeCredit = async () => {
         const client = await pool.connect()
 
         try {
             await client.query('BEGIN') 
 
-            await client.query(`INSERT INTO bank.wplata(
-                    id_konta, typ_operacji, kwota, data)
-                    VALUES ( ${id_konta}, ${typ}, ${kwota}, NOW());`)
+            await client.query(`INSERT INTO bank.kredyt(
+                id_konta, kwota, oprocentowanie, data, stan)
+                VALUES ( ${id_konta}, ${kwota}, ${oprocentowanie}, NOW(), ${stan});`)
 
             await client.query(`UPDATE bank.konto
 	                SET  saldo=saldo+(${kwota})
@@ -96,7 +96,7 @@ router.post('/add', (req, res) => {
             client.release()
         }
     }
-    makePayment().catch(e => {
+    makeCredit().catch(e => {
         console.error(e.stack)
         res.status(500).json({
             message: e.message

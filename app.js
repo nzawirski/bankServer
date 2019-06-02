@@ -33,6 +33,8 @@ app.use('/api/client', require('./api/client'))
 app.use('/api/account', require('./api/account'))
 app.use('/api/payment', require('./api/payment'))
 app.use('/api/transfer', require('./api/transfer'))
+app.use('/api/credit', require('./api/credit'))
+app.use('/api/investment', require('./api/investment'))
 
 app.use('/admin/', require('./api/admin'))
 
