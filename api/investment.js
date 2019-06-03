@@ -73,11 +73,15 @@ router.post('/add', (req, res) => {
         const client = await pool.connect()
 
         try {
-            await client.query('BEGIN') 
+            await client.query('BEGIN')
 
             await client.query(`INSERT INTO bank.lokata(
                  id_konta, kwota_poczatkowa, kwota_aktualna, oprocentowanie, data)
                 VALUES (${id_konta}, ${kwota_poczatkowa}, ${kwota_aktualna}, ${oprocentowanie}, NOW());`)
+
+            await client.query(`UPDATE bank.konto
+	            SET  saldo=saldo-(${kwota_poczatkowa})
+	            WHERE id_konta=${id_konta};`)
 
             await client.query('COMMIT')
             res.sendStatus(200)
