@@ -65,12 +65,23 @@ router.get('/getTransfers', (req, res) => {
 
     client.connect()
 
-    const query = `SELECT id_przelewu, id_konta_zrodlowego, id_konta_docelowego, kwota, bb.id_klienta AS "klient_zrodlo", cc.id_klienta AS "klient_docel", data 
+    let query = `SELECT id_przelewu, id_konta_zrodlowego, id_konta_docelowego, kwota, bb.id_klienta AS "klient_zrodlo", cc.id_klienta AS "klient_docel", data 
     FROM bank.przelew a
     JOIN bank.konto_klienta b ON a.id_konta_zrodlowego = b.id_konta
     JOIN bank.klient bb ON b.id_klienta = bb.id_klienta
     JOIN bank.konto_klienta c ON a.id_konta_docelowego = c.id_konta
     JOIN bank.klient cc ON c.id_klienta = cc.id_klienta`
+
+    let lowLimit = req.query.lowLimit ? req.query.lowLimit : 0
+    let highLimit = req.query.highLimit ? req.query.highLimit : '99!'
+    query += ` WHERE a.kwota BETWEEN ${lowLimit} AND ${highLimit}`
+
+
+    if (req.query.sort) {
+        query += ` ORDER BY a.data ${req.query.sort}`
+    }
+
+    console.log(query)
 
     client.query(query)
         .then(qres => {

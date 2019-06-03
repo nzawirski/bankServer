@@ -75,7 +75,11 @@ router.get('/:accountId/getTransfers', verifyToken, (req, res) => {
             JOIN bank.konto_klienta b ON a.id_konta_zrodlowego = b.id_konta
             WHERE a.id_konta_zrodlowego = ${accountId}`
 
-            if(req.query.sort){ 
+            let lowLimit = req.query.lowLimit ? req.query.lowLimit : 0
+            let highLimit = req.query.highLimit ? req.query.highLimit : '99!'
+            query += ` AND a.kwota BETWEEN ${lowLimit} AND ${highLimit}`
+
+            if (req.query.sort) {
                 query += ` ORDER BY a.data ${req.query.sort}`
             }
 
@@ -131,7 +135,11 @@ router.get('/:accountId/getTransfers/incoming', verifyToken, (req, res) => {
             JOIN bank.konto_klienta b ON a.id_konta_docelowego = b.id_konta
             WHERE a.id_konta_docelowego = ${accountId}`
 
-            if(req.query.sort){ 
+            let lowLimit = req.query.lowLimit ? req.query.lowLimit : 0
+            let highLimit = req.query.highLimit ? req.query.highLimit : '99!'
+            query += ` AND a.kwota BETWEEN ${lowLimit} AND ${highLimit}`
+
+            if (req.query.sort) {
                 query += ` ORDER BY a.data ${req.query.sort}`
             }
 
@@ -187,7 +195,11 @@ router.get('/:accountId/getInvestments', verifyToken, (req, res) => {
             NATURAL JOIN bank.konto_klienta
             WHERE a.id_konta = ${accountId}`
 
-            if(req.query.sort){ 
+            let lowLimit = req.query.lowLimit ? req.query.lowLimit : 0
+            let highLimit = req.query.highLimit ? req.query.highLimit : '99!'
+            query += ` AND a.kwota BETWEEN ${lowLimit} AND ${highLimit}`
+
+            if (req.query.sort) {
                 query += ` ORDER BY a.data ${req.query.sort}`
             }
 
@@ -244,7 +256,11 @@ router.get('/:accountId/getCredits', verifyToken, (req, res) => {
             NATURAL JOIN bank.konto_klienta
             WHERE a.id_konta = ${accountId}`
 
-            if(req.query.sort){ 
+            let lowLimit = req.query.lowLimit ? req.query.lowLimit : 0
+            let highLimit = req.query.highLimit ? req.query.highLimit : '99!'
+            query += ` AND a.kwota BETWEEN ${lowLimit} AND ${highLimit}`
+
+            if (req.query.sort) {
                 query += ` ORDER BY a.data ${req.query.sort}`
             }
 
@@ -301,7 +317,11 @@ router.get('/:accountId/getPayments', verifyToken, (req, res) => {
             NATURAL JOIN bank.konto_klienta
             WHERE a.id_konta = ${accountId}`
 
-            if(req.query.sort){ 
+            let lowLimit = req.query.lowLimit ? req.query.lowLimit : 0
+            let highLimit = req.query.highLimit ? req.query.highLimit : '99!'
+            query += ` AND a.kwota BETWEEN ${lowLimit} AND ${highLimit}`
+
+            if (req.query.sort) {
                 query += ` ORDER BY a.data ${req.query.sort}`
             }
 

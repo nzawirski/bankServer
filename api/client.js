@@ -152,7 +152,7 @@ router.post('/edit', verifyToken, (req, res) => {
             if (id_oddzialu_banku) {
                 query += `id_oddzialu_banku=${id_oddzialu_banku},`
             }
-            query = query.slice(0, -1) // cut the last coma
+            query = query.slice(0, -1) // cut the last comma
             query += ' '
 
             query += `WHERE id_klienta=${userId};`
