@@ -12,7 +12,8 @@ router.get('/getClients', (req, res) => {
 
     client.connect()
 
-    const query = `SELECT * FROM bank.klient`
+    const query = `SELECT * FROM bank.klient
+    NATURAL LEFT JOIN bank.oddzial_banku`
 
     client.query(query)
         .then(qres => {
