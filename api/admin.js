@@ -12,8 +12,8 @@ router.get('/getClients', (req, res) => {
 
     client.connect()
 
-    const query = `SELECT * FROM bank.klient
-    NATURAL LEFT JOIN bank.oddzial_banku`
+    const query = `SELECT * FROM bank.klient a
+    LEFT JOIN bank.oddzial_banku b ON a.id_oddzialu_banku = b.id_oddzialu`
 
     client.query(query)
         .then(qres => {
@@ -39,10 +39,10 @@ router.get('/getAccounts', (req, res) => {
     client.connect()
 
     const query = `select id_konta, saldo, id_klienta, imie, nazwisko, login, id_oddzialu_banku
-    from bank.konto
+    from bank.konto a 
     natural join bank.konto_klienta
     natural join bank.klient
-    NATURAL LEFT JOIN bank.oddzial_banku`
+    LEFT JOIN bank.oddzial_banku b ON a.id_oddzialu_banku = b.id_oddzialu`
     
 
     client.query(query)
@@ -111,8 +111,8 @@ router.get('/getCredits', (req, res) => {
 
     let query = `SELECT * FROM bank.kredyt a
             NATURAL JOIN bank.konto_klienta
-            NATURAL JOIN bank.klient
-            NATURAL LEFT JOIN bank.oddzial_banku`
+            NATURAL JOIN bank.klient b
+            LEFT JOIN bank.oddzial_banku c ON b.id_oddzialu_banku = c.id_oddzialu`
 
     let lowLimit = req.query.lowLimit ? req.query.lowLimit : 0
     let highLimit = req.query.highLimit ? req.query.highLimit : '99!'
@@ -154,8 +154,8 @@ router.get('/getInvestments', (req, res) => {
 
     let query = `SELECT * FROM bank.lokata a
             NATURAL JOIN bank.konto_klienta
-            NATURAL JOIN bank.klient
-            NATURAL LEFT JOIN bank.oddzial_banku`
+            NATURAL JOIN bank.klient b
+            LEFT JOIN bank.oddzial_banku c ON b.id_oddzialu_banku = c.id_oddzialu`
 
     let lowLimit = req.query.lowLimit ? req.query.lowLimit : 0
     let highLimit = req.query.highLimit ? req.query.highLimit : '99!'
