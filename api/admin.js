@@ -40,7 +40,9 @@ router.get('/getAccounts', (req, res) => {
     const query = `select id_konta, saldo, id_klienta, imie, nazwisko, login, id_oddzialu_banku
     from bank.konto
     natural join bank.konto_klienta
-    natural join bank.klient`
+    natural join bank.klient
+    NATURAL LEFT JOIN bank.oddzial_banku`
+    
 
     client.query(query)
         .then(qres => {
@@ -88,6 +90,92 @@ router.get('/getTransfers', (req, res) => {
             res.json({
                 message: qres.rows
             })
+            client.end()
+        })
+        .catch(e => {
+            console.error(e.stack)
+            res.status(500).json({
+                message: e.message
+            })
+        })
+
+})
+
+//kredyty
+router.get('/getCredits', (req, res) => {
+
+    const client = new Client(db)
+
+    client.connect()
+
+    let query = `SELECT * FROM bank.kredyt a
+            NATURAL JOIN bank.konto_klienta
+            NATURAL JOIN bank.klient
+            NATURAL LEFT JOIN bank.oddzial_banku`
+
+    let lowLimit = req.query.lowLimit ? req.query.lowLimit : 0
+    let highLimit = req.query.highLimit ? req.query.highLimit : '99!'
+    query += ` WHERE a.kwota BETWEEN ${lowLimit} AND ${highLimit}`
+
+    if (req.query.sort) {
+        query += ` ORDER BY a.data ${req.query.sort}`
+    }
+
+    client.query(query)
+        .then(qres => {
+            if (qres.rowCount > 0) {
+                res.json({
+                    message: qres.rows
+                })
+            }
+            else {
+                res.json({
+                    message: "no items found"
+                })
+            }
+            client.end()
+        })
+        .catch(e => {
+            console.error(e.stack)
+            res.status(500).json({
+                message: e.message
+            })
+        })
+
+})
+
+//lokaty
+router.get('/getInvestments', (req, res) => {
+
+    const client = new Client(db)
+
+    client.connect()
+
+    let query = `SELECT * FROM bank.lokata a
+            NATURAL JOIN bank.konto_klienta
+            NATURAL JOIN bank.klient
+            NATURAL LEFT JOIN bank.oddzial_banku`
+
+    let lowLimit = req.query.lowLimit ? req.query.lowLimit : 0
+    let highLimit = req.query.highLimit ? req.query.highLimit : '99!'
+    query += ` WHERE a.kwota_aktualna BETWEEN ${lowLimit} AND ${highLimit}`
+
+    if (req.query.sort) {
+        query += ` ORDER BY a.data ${req.query.sort}`
+    }
+
+    client.query(query)
+        .then(qres => {
+            if (qres.rowCount > 0) {
+                res.json({
+                    message: qres.rows
+                })
+            }
+            else {
+                res.json({
+                    message: "no items found"
+                })
+            }
             client.end()
         })
         .catch(e => {
