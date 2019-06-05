@@ -197,7 +197,7 @@ router.get('/:accountId/getInvestments', verifyToken, (req, res) => {
 
             let lowLimit = req.query.lowLimit ? req.query.lowLimit : 0
             let highLimit = req.query.highLimit ? req.query.highLimit : '99!'
-            query += ` AND a.kwota BETWEEN ${lowLimit} AND ${highLimit}`
+            query += ` AND a.kwota_aktualna BETWEEN ${lowLimit} AND ${highLimit}`
 
             if (req.query.sort) {
                 query += ` ORDER BY a.data ${req.query.sort}`
