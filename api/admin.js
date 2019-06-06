@@ -41,8 +41,8 @@ router.get('/getAccounts', (req, res) => {
     const query = `select id_konta, saldo, id_klienta, imie, nazwisko, login, id_oddzialu_banku
     from bank.konto a 
     natural join bank.konto_klienta
-    natural join bank.klient
-    LEFT JOIN bank.oddzial_banku b ON a.id_oddzialu_banku = b.id_oddzialu`
+    natural join bank.klient c
+    LEFT JOIN bank.oddzial_banku b ON c.id_oddzialu_banku = b.id_oddzialu`
     
 
     client.query(query)
